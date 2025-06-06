@@ -51,18 +51,64 @@ interface BentoGridProps extends React.HTMLAttributes<HTMLDivElement> {
 function Grid({ rows = 3, className, style, children, ...props }: BentoGridProps) {
   const { containerRef } = useBentoGrid()
 
+  // stores the current scroll target for keyboard-driven navigation
+  const targetScrollLeftRef = React.useRef(0)
+  const animationFrameId = React.useRef(0)
+
+  const animateScroll = React.useCallback(() => {
+    const el = containerRef.current
+    if (!el) return
+    const delta = targetScrollLeftRef.current - el.scrollLeft
+    if (Math.abs(delta) < 1) {
+      el.scrollLeft = targetScrollLeftRef.current
+      return
+    }
+    el.scrollLeft += delta * 0.2
+    animationFrameId.current = requestAnimationFrame(animateScroll)
+  }, [containerRef])
+
   React.useEffect(() => {
     const el = containerRef.current
     if (!el) return
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
+    targetScrollLeftRef.current = el.scrollLeft
+
+    function handleWheel(e: WheelEvent) {
+      if (!el) return
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
         e.preventDefault()
         el.scrollLeft += e.deltaY
+        targetScrollLeftRef.current = el.scrollLeft
       }
     }
-    el.addEventListener("wheel", onWheel, { passive: false })
-    return () => el.removeEventListener("wheel", onWheel)
+
+    el.addEventListener("wheel", handleWheel, { passive: false })
+    return () => el.removeEventListener("wheel", handleWheel)
   }, [containerRef])
+
+  React.useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (!containerRef.current) return
+
+      const STEP = 300
+      if (e.key === "ArrowRight") {
+        e.preventDefault()
+        targetScrollLeftRef.current += STEP
+        cancelAnimationFrame(animationFrameId.current)
+        animationFrameId.current = requestAnimationFrame(animateScroll)
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault()
+        targetScrollLeftRef.current -= STEP
+        cancelAnimationFrame(animationFrameId.current)
+        animationFrameId.current = requestAnimationFrame(animateScroll)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+      cancelAnimationFrame(animationFrameId.current)
+    }
+  }, [animateScroll, containerRef])
   return (
     <div
       ref={containerRef}
