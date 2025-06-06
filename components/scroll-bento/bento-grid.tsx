@@ -50,6 +50,19 @@ interface BentoGridProps extends React.HTMLAttributes<HTMLDivElement> {
 
 function Grid({ rows = 3, className, style, children, ...props }: BentoGridProps) {
   const { containerRef } = useBentoGrid()
+
+  React.useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault()
+        el.scrollBy({ left: e.deltaY })
+      }
+    }
+    el.addEventListener("wheel", onWheel, { passive: false })
+    return () => el.removeEventListener("wheel", onWheel)
+  }, [containerRef])
   return (
     <div
       ref={containerRef}
