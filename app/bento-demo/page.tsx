@@ -27,7 +27,7 @@ export default function BentoDemoPage() {
                   id={box.id}
                   rowSpan={(idx % 3) + 1}
                   colSpan={idx % 2 === 0 ? 2 : 1}
-                  className={`${colors[idx % colors.length]} flex items-center justify-center rounded-md text-xl font-bold min-w-32 min-h-20`}
+                  className={`${colors[idx % colors.length]} flex items-center justify-center rounded-md text-xl font-bold min-w-[250px] min-h-[200px]`}
                 >
                   {box.id}
                 </BentoBox>
