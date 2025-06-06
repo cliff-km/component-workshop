@@ -55,9 +55,9 @@ function Grid({ rows = 3, className, style, children, ...props }: BentoGridProps
     const el = containerRef.current
     if (!el) return
     const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
         e.preventDefault()
-        el.scrollBy({ left: e.deltaY })
+        el.scrollLeft += e.deltaY
       }
     }
     el.addEventListener("wheel", onWheel, { passive: false })
@@ -67,7 +67,7 @@ function Grid({ rows = 3, className, style, children, ...props }: BentoGridProps
     <div
       ref={containerRef}
       className={cn(
-        "grid overflow-x-auto scroll-smooth gap-4 [grid-auto-flow:column_dense]",
+        "grid overflow-x-auto scroll-smooth gap-4 touch-pan-x [grid-auto-flow:column_dense]",
         className
       )}
       style={{
