@@ -67,7 +67,7 @@ function Grid({ rows = 3, className, style, children, ...props }: BentoGridProps
     <div
       ref={containerRef}
       className={cn(
-        "grid overflow-x-auto scroll-smooth gap-4 touch-pan-x [grid-auto-flow:column_dense]",
+        "grid overflow-x-auto scroll-smooth gap-4 touch-auto [grid-auto-flow:column_dense]",
         className
       )}
       style={{
