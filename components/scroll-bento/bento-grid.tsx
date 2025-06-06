@@ -71,18 +71,21 @@ function Grid({ rows = 3, className, style, children, ...props }: BentoGridProps
     const el = containerRef.current
     if (!el) return
     targetScrollLeftRef.current = el.scrollLeft
-
-    function handleWheel(e: WheelEvent) {
-      if (!el) return
-      e.preventDefault()
-      const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX
-      el.scrollLeft += delta
-      targetScrollLeftRef.current = el.scrollLeft
-    }
-
-    el.addEventListener("wheel", handleWheel, { passive: false })
-    return () => el.removeEventListener("wheel", handleWheel)
+    return () => cancelAnimationFrame(animationFrameId.current)
   }, [containerRef])
+
+  const handleWheel = React.useCallback(
+    (e: React.WheelEvent<HTMLDivElement>) => {
+      const el = containerRef.current
+      if (!el) return
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault()
+        el.scrollLeft += e.deltaY
+        targetScrollLeftRef.current = el.scrollLeft
+      }
+    },
+    [containerRef]
+  )
 
   React.useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -111,8 +114,9 @@ function Grid({ rows = 3, className, style, children, ...props }: BentoGridProps
   return (
     <div
       ref={containerRef}
+      onWheel={handleWheel}
       className={cn(
-        "grid overflow-x-auto scroll-smooth gap-4 touch-auto [grid-auto-flow:column_dense]",
+        "grid overflow-x-auto scroll-smooth gap-4 touch-pan-x [grid-auto-flow:column_dense]",
         className
       )}
       style={{
