@@ -1,28 +1,6 @@
-import { BentoGridProvider, BentoGrid, BentoBox, useBentoGrid } from "@/components/scroll-bento"
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar"
-
-function DemoSidebar({ count }: { count: number }) {
-  const { scrollTo } = useBentoGrid()
-  return (
-    <Sidebar className="p-2">
-      <SidebarMenu>
-        {Array.from({ length: count }, (_, i) => (
-          <SidebarMenuItem key={i}>
-            <SidebarMenuButton onClick={() => scrollTo(String(i + 1))}>
-              {i + 1}
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
-      </SidebarMenu>
-    </Sidebar>
-  )
-}
+import { BentoGridProvider, BentoGrid, BentoBox } from "@/components/scroll-bento"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { DemoSidebar } from "./demo-sidebar"
 
 export default function BentoDemoPage() {
   const boxes = Array.from({ length: 25 }, (_, i) => ({ id: String(i + 1) }))
