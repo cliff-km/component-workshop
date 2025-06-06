@@ -74,11 +74,10 @@ function Grid({ rows = 3, className, style, children, ...props }: BentoGridProps
 
     function handleWheel(e: WheelEvent) {
       if (!el) return
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault()
-        el.scrollLeft += e.deltaY
-        targetScrollLeftRef.current = el.scrollLeft
-      }
+      e.preventDefault()
+      const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX
+      el.scrollLeft += delta
+      targetScrollLeftRef.current = el.scrollLeft
     }
 
     el.addEventListener("wheel", handleWheel, { passive: false })
