@@ -77,13 +77,17 @@ function Grid({ rows = 3, className, style, children, ...props }: BentoGridProps
   React.useEffect(() => {
     const el = containerRef.current
     if (!el) return
+
     function handleWheel(e: WheelEvent) {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
         e.preventDefault()
         el.scrollLeft += e.deltaY
         targetScrollLeftRef.current = el.scrollLeft
+      } else {
+        targetScrollLeftRef.current = el.scrollLeft + e.deltaX
       }
     }
+
     el.addEventListener("wheel", handleWheel, { passive: false })
     return () => el.removeEventListener("wheel", handleWheel)
   }, [containerRef])
@@ -93,12 +97,12 @@ function Grid({ rows = 3, className, style, children, ...props }: BentoGridProps
       if (!containerRef.current) return
 
       const STEP = 300
-      if (e.key === "ArrowRight") {
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
         e.preventDefault()
         targetScrollLeftRef.current += STEP
         cancelAnimationFrame(animationFrameId.current)
         animationFrameId.current = requestAnimationFrame(animateScroll)
-      } else if (e.key === "ArrowLeft") {
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
         e.preventDefault()
         targetScrollLeftRef.current -= STEP
         cancelAnimationFrame(animationFrameId.current)
